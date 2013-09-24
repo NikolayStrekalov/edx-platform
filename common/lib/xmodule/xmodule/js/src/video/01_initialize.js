@@ -1,13 +1,13 @@
 /**
- * @file Initialize module works with the JSON config, and sets up various settings, parameters,
- * variables. After all setup actions are performed, it invokes the video player to play the
- * specified video. This module must be invoked first. It provides several functions which do not
- * fit in with other modules.
- *
- * @external VideoPlayer
- *
- * @module Initialize
- */
+* @file Initialize module works with the JSON config, and sets up various settings, parameters,
+* variables. After all setup actions are performed, it invokes the video player to play the
+* specified video. This module must be invoked first. It provides several functions which do not
+* fit in with other modules.
+*
+* @external VideoPlayer
+*
+* @module Initialize
+*/
 
 (function (requirejs, require, define) {
 
@@ -21,15 +21,15 @@ function (VideoPlayer) {
     }
 
     /**
-     * @function
-     *
-     * Initialize module exports this function.
-     *
-     * @param {object} state The object containg the state of the video player.
-     *     All other modules, their parameters, public variables, etc. are
-     *     available via this object.
-     * @param {DOM element} element Container of the entire Video DOM element.
-     */
+* @function
+*
+* Initialize module exports this function.
+*
+* @param {object} state The object containg the state of the video player.
+* All other modules, their parameters, public variables, etc. are
+* available via this object.
+* @param {DOM element} element Container of the entire Video DOM element.
+*/
     return function (state, element) {
         _makeFunctionsPublic(state);
         state.initialize(element);
@@ -40,20 +40,20 @@ function (VideoPlayer) {
     // ***************************************************************
 
     /**
-     * @function _makeFunctionsPublic
-     *
-     * Functions which will be accessible via 'state' object. When called,
-     * these functions will get the 'state'
-     * object as a context.
-     *
-     * @param {object} state The object containg the state (properties,
-     *     methods, modules) of the Video player.
-     */
+* @function _makeFunctionsPublic
+*
+* Functions which will be accessible via 'state' object. When called,
+* these functions will get the 'state'
+* object as a context.
+*
+* @param {object} state The object containg the state (properties,
+* methods, modules) of the Video player.
+*/
     function _makeFunctionsPublic(state) {
-        state.setSpeed    = _.bind(setSpeed, state);
-        state.youtubeId   = _.bind(youtubeId, state);
+        state.setSpeed = _.bind(setSpeed, state);
+        state.youtubeId = _.bind(youtubeId, state);
         state.getDuration = _.bind(getDuration, state);
-        state.trigger     = _.bind(trigger, state);
+        state.trigger = _.bind(trigger, state);
         state.stopBuffering = _.bind(stopBuffering, state);
 
         // Old private functions. Now also public so that can be
@@ -69,9 +69,9 @@ function (VideoPlayer) {
 
     // function _renderElements(state)
     //
-    //     Create any necessary DOM elements, attach them, and set their initial configuration. Also
-    //     make the created DOM elements available via the 'state' object. Much easier to work this
-    //     way - you don't have to do repeated jQuery element selects.
+    // Create any necessary DOM elements, attach them, and set their initial configuration. Also
+    // make the created DOM elements available via the 'state' object. Much easier to work this
+    // way - you don't have to do repeated jQuery element selects.
     function _renderElements(state) {
         // Launch embedding of actual video content, or set it up so that it will be done as soon as the
         // appropriate video player (YouTube or stand alone HTML5) is loaded, and can handle embedding.
@@ -92,17 +92,17 @@ function (VideoPlayer) {
     }
 
     // function _configureCaptions(state)
-    //     Configure displaying of captions.
+    // Configure displaying of captions.
     //
-    //     Option
-    //         this.config.show_captions = true | false
+    // Option
+    // this.config.show_captions = true | false
     //
-    //     Defines whether or not captions are shown on first viewing.
+    // Defines whether or not captions are shown on first viewing.
     //
-    //     Option
-    //          this.hide_captions = true | false
+    // Option
+    // this.hide_captions = true | false
     //
-    //     represents the user's choice of having the subtitles shown or hidden. This choice is stored in cookies.
+    // represents the user's choice of having the subtitles shown or hidden. This choice is stored in cookies.
     function _configureCaptions(state) {
         if (state.config.show_captions) {
             state.hide_captions = ($.cookie('hide_captions') === 'true');
@@ -119,11 +119,11 @@ function (VideoPlayer) {
     }
 
     // function _setPlayerMode(state)
-    //     By default we will be forcing HTML5 player mode. Only in the case when, after initializtion, we will
-    //     get one available playback rate, we will change to Flash player mode. There is a need to store this
-    //     setting in cookies because otherwise we will have to change from HTML5 to Flash on every page load
-    //     in a browser that doesn't fully support HTML5. When we have this setting in cookies, we can select
-    //     the proper mode from the start (not having to change mode later on).
+    // By default we will be forcing HTML5 player mode. Only in the case when, after initializtion, we will
+    // get one available playback rate, we will change to Flash player mode. There is a need to store this
+    // setting in cookies because otherwise we will have to change from HTML5 to Flash on every page load
+    // in a browser that doesn't fully support HTML5. When we have this setting in cookies, we can select
+    // the proper mode from the start (not having to change mode later on).
     function _setPlayerMode(state) {
         (function (currentPlayerMode) {
             if ((currentPlayerMode === 'html5') || (currentPlayerMode === 'flash')) {
@@ -139,10 +139,10 @@ function (VideoPlayer) {
     }
 
     // function _parseYouTubeIDs(state)
-    //     The function parse YouTube stream ID's.
-    //     @return
-    //         false: We don't have YouTube video IDs to work with; most likely we have HTML5 video sources.
-    //         true: Parsing of YouTube video IDs went OK, and we can proceed onwards to play YouTube videos.
+    // The function parse YouTube stream ID's.
+    // @return
+    // false: We don't have YouTube video IDs to work with; most likely we have HTML5 video sources.
+    // true: Parsing of YouTube video IDs went OK, and we can proceed onwards to play YouTube videos.
     function _parseYouTubeIDs(state) {
         if (state.parseYoutubeStreams(state.config.youtubeStreams)) {
             state.videoType = 'youtube';
@@ -176,9 +176,9 @@ function (VideoPlayer) {
         state.speeds = ['0.75', '1.0', '1.25', '1.50'];
         state.videos = {
             '0.75': state.config.sub,
-            '1.0':  state.config.sub,
+            '1.0': state.config.sub,
             '1.25': state.config.sub,
-            '1.5':  state.config.sub
+            '1.5': state.config.sub
         };
 
         state.setSpeed($.cookie('video_speed'));
@@ -218,20 +218,20 @@ function (VideoPlayer) {
         this.config = {
             element: element,
 
-            start:              this.el.data('start'),
-            end:                this.el.data('end'),
+            start: this.el.data('start'),
+            end: this.el.data('end'),
 
-            caption_data_dir:   this.el.data('caption-data-dir'),
+            caption_data_dir: this.el.data('caption-data-dir'),
             caption_asset_path: this.el.data('caption-asset-path'),
-            show_captions:      (this.el.data('show-captions').toString().toLowerCase() === 'true'),
-            youtubeStreams:     this.el.data('streams'),
+            show_captions: (this.el.data('show-captions').toString().toLowerCase() === 'true'),
+            youtubeStreams: this.el.data('streams'),
 
-            sub:                this.el.data('sub'),
-            mp4Source:          this.el.data('mp4-source'),
-            webmSource:         this.el.data('webm-source'),
-            oggSource:          this.el.data('ogg-source'),
+            sub: this.el.data('sub'),
+            mp4Source: this.el.data('mp4-source'),
+            webmSource: this.el.data('webm-source'),
+            oggSource: this.el.data('ogg-source'),
 
-            fadeOutTimeout:     1400,
+            fadeOutTimeout: 1400,
 
             availableQualities: ['hd720', 'hd1080', 'highres']
         };
@@ -244,6 +244,8 @@ function (VideoPlayer) {
         } else {
             this.getVideoMetadata()
                 .always(function(json, status) {
+                    console.log(json);
+                    console.log(status);
                     var err = $.isPlainObject(json.error) ||
                                 (status !== "success" && status !== "notmodified");
 
@@ -251,6 +253,7 @@ function (VideoPlayer) {
                         // When the youtube link doesn't work for any reason
                         // (for example, the great firewall in china) any
                         // alternate sources should automatically play.
+
                         _prepareHTML5Video(_this);
                         _this.el.find('a.quality_control').hide();
                     }
@@ -263,21 +266,20 @@ function (VideoPlayer) {
 
     // function parseYoutubeStreams(state, youtubeStreams)
     //
-    //     Take a string in the form:
-    //         "iCawTYPtehk:0.75,KgpclqP-LBA:1.0,9-2670d5nvU:1.5"
-    //     parse it, and make it available via the 'state' object. If we are not given a string, or
-    //     it's length is zero, then we return false.
+    // Take a string in the form:
+    // "iCawTYPtehk:0.75,KgpclqP-LBA:1.0,9-2670d5nvU:1.5"
+    // parse it, and make it available via the 'state' object. If we are not given a string, or
+    // it's length is zero, then we return false.
     //
-    //     @return
-    //         false: We don't have YouTube video IDs to work with; most likely we have HTML5 video sources.
-    //         true: Parsing of YouTube video IDs went OK, and we can proceed onwards to play YouTube videos.
+    // @return
+    // false: We don't have YouTube video IDs to work with; most likely we have HTML5 video sources.
+    // true: Parsing of YouTube video IDs went OK, and we can proceed onwards to play YouTube videos.
     function parseYoutubeStreams(youtubeStreams) {
         var _this;
 
         if (typeof youtubeStreams === 'undefined' || youtubeStreams.length === 0) {
             return false;
         }
-
         _this = this;
         this.videos = {};
 
@@ -295,8 +297,8 @@ function (VideoPlayer) {
 
     // function parseVideoSources(, mp4Source, webmSource, oggSource)
     //
-    //     Take the HTML5 sources (URLs of videos), and make them available explictly for each type
-    //     of video format (mp4, webm, ogg).
+    // Take the HTML5 sources (URLs of videos), and make them available explictly for each type
+    // of video format (mp4, webm, ogg).
     function parseVideoSources(sources) {
         var _this = this;
 
@@ -315,9 +317,9 @@ function (VideoPlayer) {
 
     // function fetchMetadata()
     //
-    //     When dealing with YouTube videos, we must fetch meta data that has certain key facts
-    //     not available while the video is loading. For example the length of the video can be
-    //     determined from the meta data.
+    // When dealing with YouTube videos, we must fetch meta data that has certain key facts
+    // not available while the video is loading. For example the length of the video can be
+    // determined from the meta data.
     function fetchMetadata() {
         var _this = this;
 
@@ -332,7 +334,7 @@ function (VideoPlayer) {
 
     // function parseSpeed()
     //
-    //     Create a separate array of available speeds.
+    // Create a separate array of available speeds.
     function parseSpeed() {
         this.speeds = ($.map(this.videos, function(url, speed) {
             return speed;
@@ -364,9 +366,10 @@ function (VideoPlayer) {
         }
 
         successHandler = ($.isFunction(callback)) ? callback : null;
+
         xhr = $.ajax({
             url: 'https://gdata.youtube.com/feeds/api/videos/' + url + '?v=2&alt=jsonc',
-            timeout: 500,
+            timeout: 10000,
             dataType: 'jsonp',
             success: successHandler
         });
@@ -395,16 +398,16 @@ function (VideoPlayer) {
     }
 
     /*
-     * The trigger() function will assume that the @objChain is a complete chain with a method
-     * (function) at the end. It will call this function. So for example, when trigger() is
-     * called like so:
-     *
-     *     state.trigger('videoPlayer.pause', {'param1': 10});
-     *
-     * Then trigger() will execute:
-     *
-     *     state.videoPlayer.pause({'param1': 10});
-     */
+* The trigger() function will assume that the @objChain is a complete chain with a method
+* (function) at the end. It will call this function. So for example, when trigger() is
+* called like so:
+*
+* state.trigger('videoPlayer.pause', {'param1': 10});
+*
+* Then trigger() will execute:
+*
+* state.videoPlayer.pause({'param1': 10});
+*/
     function trigger(objChain, extraParameters) {
         var i, tmpObj, chain;
 

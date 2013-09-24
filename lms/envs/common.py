@@ -359,7 +359,6 @@ ROOT_URLCONF = 'lms.urls'
 IGNORABLE_404_ENDS = ('favicon.ico')
 
 # Email
-#<<<<<<< HEAD
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #DEFAULT_FROM_EMAIL = 'registration@edx.org'
 #DEFAULT_FEEDBACK_EMAIL = 'feedback@edx.org'
@@ -368,7 +367,6 @@ IGNORABLE_404_ENDS = ('favicon.ico')
 #CONTACT_EMAIL = 'info@edx.org'
 #BUGS_EMAIL = 'bugs@edx.org'
 #ADMINS = ()
-#=======
 EMAIL_BACKEND = 'django_ses.SESBackend'
 DEFAULT_FROM_EMAIL = 'registration@pelic.ru'
 DEFAULT_FEEDBACK_EMAIL = 'feedback@pelic.ru'
@@ -379,7 +377,6 @@ BUGS_EMAIL = 'bugs@pelic.ru'
 ADMINS = (
     ('edX Admins', 'admin@pelic.ru'),
 )
-#>>>>>>> 4f9bf342df105f2a5f00372194e6f7a65dac6f8b
 MANAGERS = ADMINS
 
 # Static content

@@ -187,6 +187,7 @@ function () {
 
             // We should have at least one video source. Otherwise there is no point to continue.
             if ((sourceStr.mp4 === ' ') && (sourceStr.webm === ' ') && (sourceStr.ogg === ' ')) {
+                console.log(sourceStr)
                 return;
             }
 
@@ -215,6 +216,7 @@ function () {
             // The player state is used by other parts of the VideoPlayer to detrermine what the video is
             // currently doing.
             this.videoEl = $(this.video);
+
 
             this.videoEl.css({
                 'width': '100%'

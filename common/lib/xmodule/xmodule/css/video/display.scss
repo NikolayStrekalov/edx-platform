@@ -36,17 +36,22 @@ div.video {
 
     section.video-player {
       height: 0;
-      overflow: hidden;
+      overflow: auto;
       padding-bottom: 56.25%;
       position: relative;
 
-      object, iframe {
+      object, iframe, iproblem {
+        display: block;
         border: none;
         height: 100%;
         left: 0;
         position: absolute;
         top: 0;
         width: 100%;
+      }
+
+      iproblem {
+        background-color: white;
       }
     }
 
@@ -541,6 +546,7 @@ div.video {
     height: 100%;
     left: 0;
     margin: 0;
+    overflow: auto;
     padding: 0;
     position: fixed;
     top: 0;
@@ -578,13 +584,17 @@ div.video {
         float: none;
       }
 
-      object, iframe {
+      object, iframe, problem {
         bottom: 0;
         height: 100%;
         left: 0;
         overflow: hidden;
         position: fixed;
         top: 0;
+      }
+
+      problem {
+
       }
 
       section.video-controls {

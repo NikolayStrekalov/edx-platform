@@ -7,11 +7,14 @@ class CMS.Views.ModuleEdit extends Backbone.View
     "click .component-editor .cancel-button": 'clickCancelButton'
     "click .component-editor .save-button": 'clickSaveButton'
     "click .component-actions .edit-button": 'clickEditButton'
+    "click .component-actions .insert-button": 'clickInsertButton'
+    "click .component-actions .insert-to-end-button": 'clickInsertToEndButton'
     "click .component-actions .delete-button": 'onDelete'
     "click .mode a": 'clickModeButton'
 
   initialize: ->
     @onDelete = @options.onDelete
+    @createItemStatus = 0
     @render()
 
   $component_editor: => @$el.find('.component-editor')
@@ -58,6 +61,7 @@ class CMS.Views.ModuleEdit extends Backbone.View
 
   createItem: (parent, payload) ->
     payload.parent_location = parent
+    @createItemStatus = 1
     $.post(
         "/create_item"
         payload 
@@ -73,7 +77,14 @@ class CMS.Views.ModuleEdit extends Backbone.View
         # alert "#{@model.id}"
         @loadDisplay()
         @delegateEvents()
+        if @createItemStatus == 1
+          @createItemStatus = 0
+          @$el.addClass('editing')
+          $modalCover.show().addClass('is-fixed')
+          @$component_editor().slideDown(150)
+          @loadEdit()
       )
+
 
   clickSaveButton: (event) =>
     event.preventDefault()
@@ -111,9 +122,88 @@ class CMS.Views.ModuleEdit extends Backbone.View
   clickEditButton: (event) ->
     event.preventDefault()
     @$el.addClass('editing')
+    console.log(@$el)
     $modalCover.show().addClass('is-fixed')
     @$component_editor().slideDown(150)
     @loadEdit()
+
+  clickInsertButton: (event) ->
+    event.preventDefault()
+    vidtime = @$el.find('.vidtime')
+    time_str = vidtime.html()
+    cur_time_str = time_str.substr(0,time_str.indexOf('/')-1)
+    duration_time_str = time_str.substr(time_str.indexOf('/')+2)
+    console.log(cur_time_str)
+    console.log(duration_time_str)
+    cur_time_str_parts = cur_time_str.split(':')
+    time = 0
+    for elem in cur_time_str_parts
+      time_part = parseInt(elem)
+      time = time*60+time_part
+    console.log(time)
+    if time > 0
+      if cur_time_str == duration_time_str
+        time = time-1
+    seconds = time%60
+    minutes = ((time-seconds)/60)%60
+    hours = (time-minutes*60-seconds)/3600
+    seconds_str = seconds + ""
+    if seconds_str.length == 1
+      seconds_str = "0" + seconds_str
+    minutes_str = minutes + ""
+    if minutes_str.length == 1
+      minutes_str = "0" + minutes_str
+    hours_str = hours + ""
+    if hours_str.length == 1
+      hours_str = "0" + hours_str
+    time_format = hours_str + ":" + minutes_str + ":" + seconds_str
+    console.log(time_format)
+    new_component = document.getElementsByClassName('multiple-templates')
+    for elem in new_component
+      if elem.getAttribute('data-type') == 'problem'
+      #if elem.data.type == 'problem'
+        elem.click()
+        elem.setAttribute 'time', time_format
+        elem.setAttribute 'show_now', 'False'
+
+  clickInsertToEndButton: (event) ->
+    event.preventDefault()
+    vidtime = @$el.find('.vidtime')
+    time_str = vidtime.html()
+    duration_time_str = time_str.substr(time_str.indexOf('/')+2)
+    console.log(duration_time_str)
+    duration_time_str = duration_time_str.split(':')
+    time = 0
+    for elem in duration_time_str
+      time_part = parseInt(elem)
+      time = time*60+time_part
+    console.log(time)
+    if time == 0
+      alert "Видео ещё не проигрывается, пожалуйста, нажмите кнопку Play"
+    else
+      time = time-1
+      seconds = time%60
+      minutes = ((time-seconds)/60)%60
+      hours = (time-minutes*60-seconds)/3600
+      seconds_str = seconds + ""
+      if seconds_str.length == 1
+        seconds_str = "0" + seconds_str
+      minutes_str = minutes + ""
+      if minutes_str.length == 1
+        minutes_str = "0" + minutes_str
+      hours_str = hours + ""
+      if hours_str.length == 1
+        hours_str = "0" + hours_str
+      time_format = hours_str + ":" + minutes_str + ":" + seconds_str
+      console.log(time_format)
+      new_component = document.getElementsByClassName('multiple-templates')
+      for elem in new_component
+        if elem.getAttribute('data-type') == 'problem'
+        #if elem.data.type == 'problem'
+          elem.click()
+          elem.setAttribute 'time', time_format
+          elem.setAttribute 'show_now', 'False'
+
 
   clickModeButton: (event) ->
     event.preventDefault()

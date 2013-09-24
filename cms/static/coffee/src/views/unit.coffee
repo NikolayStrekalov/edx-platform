@@ -29,8 +29,14 @@ class CMS.Views.UnitEdit extends Backbone.View
       el: @$('.unit-term-input')
       model: @model
     )
+    @randomView = new CMS.Views.UnitEdit.RandomEdit(
+      el: @$('.unit-random-problem')
+      model: @model
+    )
 
     @model.on('change:state', @render)
+
+    @cancelIndex = 0
 
     @$newComponentItem = @$('.new-component-item')
     @$newComponentTypePicker = @$('.new-component')
@@ -82,6 +88,12 @@ class CMS.Views.UnitEdit extends Backbone.View
 
   closeNewComponent: (event) =>
     event.preventDefault()
+    if @cancelIndex == 0
+      new_component = document.getElementsByClassName('multiple-templates')
+      for elem in new_component
+        if elem.getAttribute('data-type') == 'problem'
+          elem.setAttribute 'time', ''
+          elem.setAttribute 'show_now', ''
 
     @$newComponentTypePicker.slideDown(250)
     @$newComponentTemplatePickers.slideUp(250)
@@ -108,7 +120,11 @@ class CMS.Views.UnitEdit extends Backbone.View
       unit_id: unit_location_analytics
       type: $(event.currentTarget).data('location')
 
+    @cancelIndex = 1
+
     @closeNewComponent(event)
+
+    @cancelIndex = 0
 
   components: => @$('.component').map((idx, el) -> $(el).data('id')).get()
 
@@ -251,6 +267,7 @@ class CMS.Views.UnitEdit.NameEdit extends Backbone.View
     metadata = $.extend({}, @model.get('metadata'))
     metadata.display_name = $('.unit-display-name-input').val()
     metadata.direct_term = $('.unit-direct-term-input').val()
+    metadata.random_problem_count = $('.unit-random-problem-input').val()
     @model.save(metadata: metadata)
     # Update name shown in the right-hand side location summary.
     $('.unit-location .editing .unit-name').html(metadata.display_name)
@@ -291,6 +308,7 @@ class CMS.Views.UnitEdit.TermEdit extends Backbone.View
     metadata = $.extend({}, @model.get('metadata'))
     metadata.display_name = $('.unit-display-name-input').val()
     metadata.direct_term = $('.unit-direct-term-input').val()
+    metadata.random_problem_count = $('.unit-random-problem-input').val()
     @model.save(metadata: metadata)
 
     setTimeout('$(".save-term").val("Сохранить"); $(".save-term").removeClass("save-term-active");', 500)
@@ -316,3 +334,37 @@ class CMS.Views.UnitEdit.Visibility extends Backbone.View
 
   render: =>
     @$el.val(@model.get('state'))
+
+
+
+class CMS.Views.UnitEdit.RandomEdit extends Backbone.View
+  events:
+    'change .unit-random-problem-input': 'saveRand'
+
+  initialize: =>
+    @model.on('change:metadata', @render)
+    @model.on('change:state', @setEnabled)
+    @setEnabled()
+    @saveRand
+    @$spinner = $('<span class="spinner-in-field-icon"></span>');
+
+  render: =>
+    @$('.unit-random-problem-input').val(@model.get('metadata').random_problem_count)
+
+  setEnabled: =>
+    disabled = @model.get('state') == 'public'
+    if disabled
+      @$('.unit-random-problem-input').attr('disabled', true)
+    else
+      @$('.unit-random-problem-input').removeAttr('disabled')
+
+  saveRand: =>
+    # Treat the metadata dictionary as immutable
+    metadata = $.extend({}, @model.get('metadata'))
+    metadata.display_name = $('.unit-display-name-input').val()
+    metadata.direct_term = $('.unit-direct-term-input').val()
+    metadata.random_problem_count = $('.unit-random-problem-input').val()
+    @model.save(metadata: metadata)
+    # Update name shown in the right-hand side location summary.
+    $('.unit-location .editing .unit-name').html(metadata.display_name)
+

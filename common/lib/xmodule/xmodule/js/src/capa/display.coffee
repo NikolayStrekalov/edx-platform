@@ -6,7 +6,9 @@ class @Problem
     @el = $(element).find('.problems-wrapper')
     @id = @el.data('problem-id')
     @element_id = @el.attr('id')
+    @el_show = @el.attr('show_answers_button')
     @url = @el.data('url')
+    @index_show = 0
     @render()
 
   $: (selector) ->
@@ -61,6 +63,8 @@ class @Problem
     progress = "(баллов: #{detail})"
     if status == 'none' and detail? and detail.indexOf('/') > 0
         a = detail.split('/')
+        possible = parseInt(a[1])
+        progress = "(возможное количество баллов: #{possible})"
         possible = parseFloat(a[1])
         if possible == 1
             # i18n
@@ -213,7 +217,7 @@ class @Problem
       return
 
     if not window.FormData
-      alert "Отправка прервана! Ваш браузер, к сожалению, не поддерживает загрузку файлов. Используйте, пожалуйста, Chrome, Яндекс.Браузер или FireFox."
+      alert "Отправка прервана! К сожалению, ваш браузер не поддерживает загрузку файлов. Используйте, пожалуйста, Яндекс.Браузер, Chrome или FireFox."
       return
 
     fd = new FormData()
@@ -234,25 +238,25 @@ class @Problem
         for file in element.files
           if allowed_files.length != 0 and file.name not in allowed_files
             unallowed_file_submitted = true
-            errors.push "You submitted #{file.name}; only #{allowed_files} are allowed."
+            errors.push "Вы отправили #{file.name}; допустимые имена файлов #{allowed_files}."
           if file.name in required_files
             required_files.splice(required_files.indexOf(file.name), 1)
           if file.size > max_filesize
             file_too_large = true
-            errors.push 'Your file "' + file.name '" is too large (max size: ' + max_filesize/(1000*1000) + ' MB)'
+            errors.push 'Ваш файл "' + file.name '" слишком большой (максимальный допустимый размер: ' + max_filesize/(1000*1000) + ' MB)'
           fd.append(element.id, file)
         if element.files.length == 0
           file_not_selected = true
           fd.append(element.id, '') # In case we want to allow submissions with no file
         if required_files.length != 0
           required_files_not_submitted = true
-          errors.push "You did not submit the required files: #{required_files}."
+          errors.push "Мы ожидаем получить от вас следующие недостающие файлы: #{required_files}."
       else
         fd.append(element.id, element.value)
 
 
     if file_not_selected
-      errors.push 'You did not select any files to submit'
+      errors.push 'Вы не выбрали файлы для отправки.'
 
     error_html = '<ul>\n'
     for error in errors
@@ -352,17 +356,17 @@ class @Problem
         @el.addClass 'showed'
         @updateProgress response
     else
-      @$('[id^=answer_], [id^=solution_]').text ''
-      @$('[correct_answer]').attr correct_answer: null
-      @el.removeClass 'showed'
-      @$('.show-label').text 'Показать ответ(ы)'
+        @$('[id^=answer_], [id^=solution_]').text ''
+        @$('[correct_answer]').attr correct_answer: null
+        @el.removeClass 'showed'
+        @$('.show-label').text 'Показать ответ(ы)'
 
-      @el.find(".capa_inputtype").each (index, inputtype) =>
-        display = @inputtypeDisplays[$(inputtype).attr('id')]
-        classes = $(inputtype).attr('class').split(' ')
-        for cls in classes
-          hideMethod = @inputtypeHideAnswerMethods[cls]
-          hideMethod(inputtype, display) if hideMethod?
+        @el.find(".capa_inputtype").each (index, inputtype) =>
+          display = @inputtypeDisplays[$(inputtype).attr('id')]
+          classes = $(inputtype).attr('class').split(' ')
+          for cls in classes
+            hideMethod = @inputtypeHideAnswerMethods[cls]
+            hideMethod(inputtype, display) if hideMethod?
 
   gentle_alert: (msg) =>
     if @el.find('.capa_alert').length

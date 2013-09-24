@@ -17,6 +17,45 @@ CMS.Models.Metadata = Backbone.Model.extend({
     initialize: function() {
         this.original_value = this.get('value');
         this.original_explicitly_set = this.get('explicitly_set');
+
+        if (this.getFieldName() === "problem_time"){
+          var _len1;
+          var new_component = document.getElementsByClassName('multiple-templates');
+          for (var _j = 0, _len1 = new_component.length; _j < _len1; _j++) {
+            var elem = new_component[_j];
+            if (elem.getAttribute('data-type') === 'problem') {
+                try {
+                  var time = elem.getAttribute('time');
+                  if (time.length > 0){
+                    this.setValue(time);
+                    elem.setAttribute('time', '');
+                  }
+                }
+                catch (error){
+                    console.log('Set time by yourself')
+                }
+            }
+          }
+        }
+        if (this.getFieldName() === "problem_now"){
+          var _len1;
+          var new_component = document.getElementsByClassName('multiple-templates');
+          for (var _j = 0, _len1 = new_component.length; _j < _len1; _j++) {
+            var elem = new_component[_j];
+            if (elem.getAttribute('data-type') === 'problem') {
+                try {
+                  var show = elem.getAttribute('show_now');
+                  if (show.length > 0){
+                    this.setValue("False");
+                    elem.setAttribute('show_now', '');
+                  }
+                }
+                catch (error){
+                    console.log('Set show by yourself')
+                }
+            }
+          }
+        }
     },
 
     /**

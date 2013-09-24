@@ -105,6 +105,19 @@
 	}
 }
 
+.insert-icon {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	margin-right: 2px;
+	background: url(../img/plus-icon.png) no-repeat;
+
+	&.white {
+		background: url(../img/plus-icon-white.png) no-repeat;
+	}
+}
+
+
 .visibility-toggle {
 	.toggle-icon {
 		display: inline-block;

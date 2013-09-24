@@ -311,6 +311,7 @@ def edit_unit(request, location):
     unit_state = compute_unit_state(item)
 
     return render_to_response('unit.html', {
+        'length': len(components),
         'context_course': course,
         'unit': item,
         'unit_location': location,

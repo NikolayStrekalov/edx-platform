@@ -13,7 +13,7 @@
     <input type="hidden" name="problem_id" value="${ problem['name'] }" />
 
     % if check_button:
-    <input class="check ${ check_button }" type="button" value="${ check_button }" />
+    <input class="check" type="button" value="${ check_button }" />
     % endif
     % if reset_button:
     <input class="reset" type="button" value="Сбросить ответы" />
@@ -22,18 +22,28 @@
     <input class="save" type="button" value="Сохранить" />
     % endif
     % if answer_available:
-    <button class="show" id="show_answers_button" style="display: none"><span class="show-label">Показать ответ(ы)</span> <span class="sr">(для вопросов выше - рядом с каждым полем)</span></button>
+    <button class="show" id="show_answers_button_${id}" style="display: none"><span class="show-label">Показать ответ(ы)</span> <span class="sr">(для вопросов выше - рядом с каждым полем)</span></button>
 
     % endif
-        <script type='text/javascript'>
-            $(document).ready(function () {
-                var t = '${delay_answers}';
-                var id = setTimeout(function() {
-                  $('#show_answers_button').show();
-                }, t*1000);
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            var t = '${delay_answers}';
+            console.log(t);
+            var id = setTimeout(function() {
+              console.log("show_answers_button_${id}");
+              $("#show_answers_button_${id}").css('display','block');
+            }, t*1000);
+        });
 
-            });
     </script>
+
+    % if return_to_video_button:
+    <!--
+    <section class="video-controls"></section>
+    <input class="return" type="button" value="Вернуться к видео" />
+    -->
+    % endif
+
     % if attempts_allowed :
     <section class="submission_feedback">
 
@@ -43,3 +53,4 @@
     % endif
   </section>
 </section>
+

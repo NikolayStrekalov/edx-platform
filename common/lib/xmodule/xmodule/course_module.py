@@ -216,7 +216,6 @@ class CourseFields(object):
     advanced_modules = List(help="Beta modules used in your course", scope=Scope.settings)
     has_children = True
     checklists = List(scope=Scope.settings,
-#<<<<<<< HEAD
                       default=[
                           {"short_description": "Getting Started With Studio",
                            "items": [{"short_description": "Add Course Team Members",
@@ -330,7 +329,6 @@ class CourseFields(object):
                                       "action_url": "SettingsDetails",
                                       "action_text": "Edit Course Schedule &amp; Details",
                                       "action_external": False}]}
-#=======
 #        default=[
 #            {"short_description" : u"Начало работы со студией",
 #             "items" : [{"short_description": u"Добавить членов курса",
@@ -448,7 +446,6 @@ class CourseFields(object):
                         #  "action_text": "Edit Course Schedule &amp; Details",
                          # "action_external": False}]
 #            }
-#>>>>>>> 4f9bf342df105f2a5f00372194e6f7a65dac6f8b
         ])
     info_sidebar_name = String(scope=Scope.settings, default=u'Раздаточные материалы')
     show_timezone = Boolean(help="True if timezones should be shown on dates in the courseware", scope=Scope.settings, default=True)

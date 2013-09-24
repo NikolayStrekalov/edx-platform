@@ -36,7 +36,6 @@ log = logging.getLogger(__name__)
 class VideoFields(object):
     """Fields for `VideoModule` and `VideoDescriptor`."""
     display_name = String(
-#<<<<<<< HEAD
         display_name="Display Name", help="Display name for this module.",
         default="Video",
         scope=Scope.settings
@@ -114,31 +113,6 @@ class VideoFields(object):
         scope=Scope.settings,
         default=""
     )
-#=======
-#        display_name=u"Отображаемое имя",
-#        help=u"Это имя появляется в горизонтальной навигации наверху страницы.",
-#        scope=Scope.settings,
-#        # it'd be nice to have a useful default but it screws up other things; so,
-#        # use display_name_with_default for those
-#        default=u"Видео"
-#    )
-#    data = String(
-#        help=u"XML-данные",
-#        default='',
-#        scope=Scope.content
-#    )
-#    position = Integer(help=u"Текущая позиция в видео", scope=Scope.user_state, default=0)
-#    show_captions = Boolean(help=u"Управляет, показываются ли по умолчанию заголовки.", display_name=u"Показывать заголовки", scope=Scope.settings, default=True)
-#    youtube_id_1_0 = String(help=u"YouTube ID для видео нормальной скорости.", display_name=u"Обычная скорость", scope=Scope.settings, default="OEoXaMPEzfM")
-#    youtube_id_0_75 = String(help=u"Youtube ID для видео скорости 0.75x.", display_name=u"Скорость: .75x", scope=Scope.settings, default="")
-#    youtube_id_1_25 = String(help=u"Youtube ID для видео скорости 1.25x", display_name=u"Скорость: 1.25x", scope=Scope.settings, default="")
-#    youtube_id_1_5 = String(help=u"Youtube ID для видео скорости 1.5x", display_name=u"Скорость: 1.5x", scope=Scope.settings, default="")
-#    start_time = Float(help=u"Время запуска видео", display_name=u"Время начала", scope=Scope.settings, default=0.0)
-#    end_time = Float(help=u"Время, когда показ видео закончится", display_name=u"Время окончания", scope=Scope.settings, default=0.0)
-#    source = String(help=u"Внешняя ссылка на видеофайл.", display_name=u"Скачать видео", scope=Scope.settings, default="")
-#    track = String(help=u"Внешняя ссылка на субтитры.", display_name=u"Скачать субтитры", scope=Scope.settings, default="")
-#>>>>>>> 4f9bf342df105f2a5f00372194e6f7a65dac6f8b
-
 
 class VideoModule(VideoFields, XModule):
     """
@@ -179,6 +153,7 @@ class VideoModule(VideoFields, XModule):
         log.debug(u"DISPATCH {0}".format(dispatch))
         raise Http404()
 
+
     def get_instance_state(self):
         """Return information about state (position)."""
         return json.dumps({'position': self.position})
@@ -204,7 +179,7 @@ class VideoModule(VideoFields, XModule):
             'show_captions': json.dumps(self.show_captions),
             'start': self.start_time,
             'end': self.end_time,
-            'autoplay': settings.MITX_FEATURES.get('AUTOPLAY_VIDEOS', True)
+            'autoplay': settings.MITX_FEATURES.get('AUTOPLAY_VIDEOS', True),
         })
 
 
@@ -214,8 +189,8 @@ class VideoDescriptor(VideoFields, TabsEditingDescriptor, EmptyDataRawDescriptor
 
     tabs = [
         # {
-        #     'name': "Subtitles",
-        #     'template': "video/subtitles.html",
+        # 'name': "Subtitles",
+        # 'template': "video/subtitles.html",
         # },
         {
             'name': "Settings",
@@ -226,43 +201,41 @@ class VideoDescriptor(VideoFields, TabsEditingDescriptor, EmptyDataRawDescriptor
 
     def __init__(self, *args, **kwargs):
         super(VideoDescriptor, self).__init__(*args, **kwargs)
-#<<<<<<< HEAD
+
         # For backwards compatibility -- if we've got XML data, parse
         # it out and set the metadata fields
         if self.data:
             model_data = VideoDescriptor._parse_video_xml(self.data)
             self._model_data.update(model_data)
             del self.data
-#=======
         # If we don't have a `youtube_id_1_0`, this is an XML course
         # and we parse out the fields.
-#        if self.data and 'youtube_id_1_0' not in self._model_data:
-#            _parse_video_xml(self, self.data)
+# if self.data and 'youtube_id_1_0' not in self._model_data:
+# _parse_video_xml(self, self.data)
 #
     @property
     def get_class(self):
         return "VideoDescriptor"
 #
-#    @property
-#    def non_editable_metadata_fields(self):
-#        non_editable_fields = super(MetadataOnlyEditingDescriptor, self).non_editable_metadata_fields
-#        non_editable_fields.extend([VideoModule.start_time,
-#                                    VideoModule.end_time])
-#        return non_editable_fields
-#>>>>>>> 4f9bf342df105f2a5f00372194e6f7a65dac6f8b
+# @property
+# def non_editable_metadata_fields(self):
+# non_editable_fields = super(MetadataOnlyEditingDescriptor, self).non_editable_metadata_fields
+# non_editable_fields.extend([VideoModule.start_time,
+# VideoModule.end_time])
+# return non_editable_fields
 
     @classmethod
     def from_xml(cls, xml_data, system, org=None, course=None):
         """
-        Creates an instance of this descriptor from the supplied xml_data.
-        This may be overridden by subclasses
+Creates an instance of this descriptor from the supplied xml_data.
+This may be overridden by subclasses
 
-        xml_data: A string of xml that will be translated into data and children for
-            this module
-        system: A DescriptorSystem for interacting with external resources
-        org and course are optional strings that will be used in the generated modules
-            url identifiers
-        """
+xml_data: A string of xml that will be translated into data and children for
+this module
+system: A DescriptorSystem for interacting with external resources
+org and course are optional strings that will be used in the generated modules
+url identifiers
+"""
         xml_object = etree.fromstring(xml_data)
         url_name = xml_object.get('url_name', xml_object.get('slug'))
         location = Location(
@@ -278,8 +251,8 @@ class VideoDescriptor(VideoFields, TabsEditingDescriptor, EmptyDataRawDescriptor
 
     def definition_to_xml(self, resource_fs):
         """
-        Returns an xml string representing this module.
-        """
+Returns an xml string representing this module.
+"""
         xml = etree.Element('video')
         youtube_string = _create_youtube_string(self)
         # Mild workaround to ensure that tests pass -- if a field
@@ -318,17 +291,17 @@ class VideoDescriptor(VideoFields, TabsEditingDescriptor, EmptyDataRawDescriptor
     @staticmethod
     def _parse_youtube(data):
         """
-        Parses a string of Youtube IDs such as "1.0:AXdE34_U,1.5:VO3SxfeD"
-        into a dictionary. Necessary for backwards compatibility with
-        XML-based courses.
-        """
+Parses a string of Youtube IDs such as "1.0:AXdE34_U,1.5:VO3SxfeD"
+into a dictionary. Necessary for backwards compatibility with
+XML-based courses.
+"""
         ret = {'0.75': '', '1.00': '', '1.25': '', '1.50': ''}
 
         videos = data.split(',')
         for video in videos:
             pieces = video.split(':')
             try:
-                speed = '%.2f' % float(pieces[0])  # normalize speed
+                speed = '%.2f' % float(pieces[0]) # normalize speed
 
                 # Handle the fact that youtube IDs got double-quoted for a period of time.
                 # Note: we pass in "VideoFields.youtube_id_1_0" so we deserialize as a String--
@@ -342,9 +315,9 @@ class VideoDescriptor(VideoFields, TabsEditingDescriptor, EmptyDataRawDescriptor
     @staticmethod
     def _parse_video_xml(xml_data):
         """
-        Parse video fields out of xml_data. The fields are set if they are
-        present in the XML.
-        """
+Parse video fields out of xml_data. The fields are set if they are
+present in the XML.
+"""
         xml = etree.fromstring(xml_data)
         model_data = {}
 
@@ -384,7 +357,7 @@ class VideoDescriptor(VideoFields, TabsEditingDescriptor, EmptyDataRawDescriptor
                     if youtube_id != '' or 'html5_sources' in model_data:
                         model_data['youtube_id_{0}'.format(normalized_speed.replace('.', '_'))] = youtube_id
             else:
-                #  Convert XML attrs into Python values.
+                # Convert XML attrs into Python values.
                 if attr in conversions:
                     value = conversions[attr](value)
                 else:
@@ -398,14 +371,14 @@ class VideoDescriptor(VideoFields, TabsEditingDescriptor, EmptyDataRawDescriptor
     @classmethod
     def _deserialize(cls, attr, value):
         """
-        Handles deserializing values that may have been encoded with json.dumps.
-        """
+Handles deserializing values that may have been encoded with json.dumps.
+"""
         return cls.get_map_for_field(attr).from_xml(value)
 
     @staticmethod
     def _parse_time(str_time):
         """Converts s in '12:34:45' format to seconds. If s is
-        None, returns empty string"""
+None, returns empty string"""
         if not str_time:
             return ''
         else:
@@ -419,12 +392,12 @@ class VideoDescriptor(VideoFields, TabsEditingDescriptor, EmptyDataRawDescriptor
 
 def _create_youtube_string(module):
     """
-    Create a string of Youtube IDs from `module`'s metadata
-    attributes. Only writes a speed if an ID is present in the
-    module.  Necessary for backwards compatibility with XML-based
-    courses.
-    """
-#<<<<<<< HEAD
+Create a string of Youtube IDs from `module`'s metadata
+attributes. Only writes a speed if an ID is present in the
+module. Necessary for backwards compatibility with XML-based
+courses.
+"""
+
     youtube_ids = [
         module.youtube_id_0_75,
         module.youtube_id_1_0,
@@ -436,13 +409,13 @@ def _create_youtube_string(module):
                      for pair
                      in zip(youtube_speeds, youtube_ids)
                      if pair[1]])
-#=======
-#    ret = {'0.75': 'slow', '1.00': 'norm', '1.25': 'fast', '1.50': 'xfast'}
-#    if data == '':
-#        return ret
-#    videos = data.split(',')
-#    for video in videos:
-#        pieces = video.split(':')
+
+# ret = {'0.75': 'slow', '1.00': 'norm', '1.25': 'fast', '1.50': 'xfast'}
+# if data == '':
+# return ret
+# videos = data.split(',')
+# for video in videos:
+# pieces = video.split(':')
         # HACK
         # To elaborate somewhat: in many LMS tests, the keys for
         # Youtube IDs are inconsistent. Sometimes a particular
@@ -450,20 +423,19 @@ def _create_youtube_string(module):
         # ('1.0' versus '1.00'). So it's necessary to either do
         # something like this or update all the tests to work
         # properly.
-#        ret['%.2f' % float(pieces[0])] = pieces[1]
-#    return ret
+# ret['%.2f' % float(pieces[0])] = pieces[1]
+# return ret
 
 
 #def _parse_time(str_time):
-#    """Converts s in '12:34:45' format to seconds. If s is
-#    None, returns empty string"""
-#    if str_time is None or str_time == '':
-#        return ''
-#    else:
-#        obj_time = time.strptime(str_time, '%H:%M:%S')
-#        return datetime.timedelta(
-#            hours=obj_time.tm_hour,
-#            minutes=obj_time.tm_min,
-#            seconds=obj_time.tm_sec
-#        ).total_seconds()
-#>>>>>>> 4f9bf342df105f2a5f00372194e6f7a65dac6f8b
+# """Converts s in '12:34:45' format to seconds. If s is
+# None, returns empty string"""
+# if str_time is None or str_time == '':
+# return ''
+# else:
+# obj_time = time.strptime(str_time, '%H:%M:%S')
+# return datetime.timedelta(
+# hours=obj_time.tm_hour,
+# minutes=obj_time.tm_min,
+# seconds=obj_time.tm_sec
+# ).total_seconds()

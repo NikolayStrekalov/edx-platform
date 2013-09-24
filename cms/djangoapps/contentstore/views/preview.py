@@ -76,6 +76,13 @@ def preview_component(request, location):
 
     component = modulestore().get_item(location)
 
+    mod_class = component.__class__.__name__
+
+    current_module_class = 'other'
+    if mod_class == "CapaDescriptor":
+      current_module_class = 'problem'
+    if mod_class == "VideoDescriptor":
+      current_module_class = 'video'
 
     component.get_html = wrap_xmodule(
         component.get_html,
@@ -86,6 +93,7 @@ def preview_component(request, location):
     return render_to_response('component.html', {
         'preview': get_preview_html(request, component, 0),
         'editor': component.runtime.render(component, None, 'studio_view').content,
+        'module_class': current_module_class,
     })
 
 

@@ -179,6 +179,18 @@ class CapaFields(object):
         help=u"Исходный код для заданий в LaTeX или Word. Эта функция поддерживается неважно.",
         scope=Scope.settings
     )
+    problem_now = Boolean(
+        display_name=u"Задание сразу/во время видео",
+        help=u"True - показать задание сразу. False - задание будет показано во время видео.",
+        scope=Scope.settings,
+        default=True
+    )
+    problem_time = String(
+        display_name=u"Время показа видео",
+        help=u"Укажите момент показа задачи в виде HH:MM:SS",
+        scope=Scope.settings,
+        default=None
+    )
 
 
 class CapaModule(CapaFields, XModule):
@@ -545,9 +557,24 @@ class CapaModule(CapaFields, XModule):
         else:
             check_button = False
 
+        show_return_to_video_button = True
+        problem_time_to_show = -1
+
+        if self.problem_now:
+            show_return_to_video_button = False
+        else:
+            hours = self.problem_time[0:2]
+            minutes = self.problem_time[3:5]
+            seconds = self.problem_time[6:8]
+            hours_int = int(hours)
+            minutes_int = int(minutes)
+            seconds_int = int(seconds)
+            problem_time_to_show = hours_int*3600+minutes_int*60+seconds_int
+
         content = {'name': self.display_name_with_default,
                    'html': html,
                    'weight': self.weight,
+                   'id': self.id
                    }
         context = {'problem': content,
                    'id': self.id,
@@ -558,6 +585,9 @@ class CapaModule(CapaFields, XModule):
                    'attempts_used': self.attempts,
                    'attempts_allowed': self.max_attempts,
                    'delay_answers': self.showbuttonanswer,
+                   'problem_now': self.problem_now,
+                   'problem_time': problem_time_to_show,
+                   'return_to_video_button': show_return_to_video_button,
                    'check_answer': self.checkanswer,
                    'progress': self.get_progress(),
                    'progress_detail': Progress.to_js_detail_str(self.get_progress())

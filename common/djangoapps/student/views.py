@@ -416,13 +416,10 @@ def login_user(request, error=""):
     try:
         user = User.objects.get(email=email)
     except User.DoesNotExist:
-#<<<<<<< HEAD
         AUDIT_LOG.warning(u"Login failed - Unknown user email: {0}".format(email))
         user = None
-#=======
 #        log.warning(u"Login failed - Unknown user email: {0}".format(email))
 #        return HttpResponse(json.dumps({'success': False,'value': _(u'Введённый e-mail или пароль неверен.')}))
-#>>>>>>> 4f9bf342df105f2a5f00372194e6f7a65dac6f8b
 
     # if the user doesn't exist, we want to set the username to an invalid
     # username so that authentication is guaranteed to fail and we can take
@@ -435,17 +432,14 @@ def login_user(request, error=""):
         return HttpResponse(json.dumps({'success': False,
                                         'value': _('Too many failed login attempts. Try again later.')}))
     if user is None:
-#<<<<<<< HEAD
         # if we didn't find this username earlier, the account for this email
         # doesn't exist, and doesn't have a corresponding password
         if username != "":
             AUDIT_LOG.warning(u"Login failed - password for {0} is invalid".format(email))
         return HttpResponse(json.dumps({'success': False,
                                         'value': _('Email or password is incorrect.')}))
-#=======
 #        log.warning(u"Login failed - password for {0} is invalid".format(email))
 #        return HttpResponse(json.dumps({'success': False,'value': _(u'Введённый e-mail или пароль неверен.')}))
-#>>>>>>> 4f9bf342df105f2a5f00372194e6f7a65dac6f8b
 
     if user is not None and user.is_active:
         try:
@@ -1006,17 +1000,14 @@ def activate_account(request, key):
         )
         return resp
     if len(r) == 0:
-#<<<<<<< HEAD
         return render_to_response(
             "registration/activation_invalid.html",
             {'csrf': csrf(request)['csrf_token']}
         )
     return HttpResponse(_("Unknown error. Please e-mail us to let us know how it happened."))
-#=======
 #        return render_to_response("registration/activation_invalid.html", {'csrf': csrf(request)['csrf_token']})
 #    return HttpResponse(_(u"Неизвестная ошибка. Пожалуйста, сообщите нам о ней по электронной почте."))
 #
-#>>>>>>> 4f9bf342df105f2a5f00372194e6f7a65dac6f8b
 
 
 @ensure_csrf_cookie

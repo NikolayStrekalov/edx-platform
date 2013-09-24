@@ -53,6 +53,7 @@
       <div class="main-column">
         <article class="unit-body window">
           <p class="unit-name-input"><label>Название элемента:</label><input type="text" value="${unit.display_name_with_default | h}" class="unit-display-name-input" /></p>
+          <div class="unit-random-problem">Показывать ученикам случайно <input type="text" value = "${unit.random_show | h}" class="unit-random-problem-input" /> из ${length}</div>
           <label>Условие для перенаправления:</label>
 
 
@@ -394,7 +395,7 @@
                         </div>
                     </div>
                     % endif
-                    <a href="#" class="cancel-button">Cancel</a>
+                    <a href="#" class="cancel-button">Отмена</a>
                 </div>
                 % endif
                 % endfor
