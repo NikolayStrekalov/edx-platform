@@ -1,8 +1,11 @@
 from auth.authz import STAFF_ROLE_NAME, INSTRUCTOR_ROLE_NAME
 from auth.authz import is_user_in_course_group_role
 from django.core.exceptions import PermissionDenied
-from ..utils import get_course_location_for_item
+from django.core.urlresolvers import reverse
+from ..utils import get_course_location_for_item, get_lms_link_for_item
 from xmodule.modulestore import Location
+from xmodule.modulestore.django import modulestore
+from xmodule.error_module import ErrorDescriptor
 
 
 def get_location_and_verify_access(request, org, course, name):
@@ -39,3 +42,39 @@ def has_access(user, location, role=STAFF_ROLE_NAME):
                 INSTRUCTOR_ROLE_NAME
         )
     return _has_access
+
+def list_user_courses(user, format_function = None):
+    """
+    Return list of courses for user.
+    """
+    courses = modulestore('direct').get_items(['i4x', None, None, 'course', None])
+
+    # filter out courses that we don't have access too
+    def course_filter(course):
+        return (has_access(user, course.location)
+                # TODO remove this condition when templates purged from db
+                and course.location.course != 'templates'
+                and course.location.org != ''
+                and course.location.course != ''
+                and course.location.name != '')
+    courses = filter(course_filter, courses)
+
+    def format_course_for_view(course):
+        return (
+            course.display_name,
+            reverse("course_index", kwargs={
+                'org': course.location.org,
+                'course': course.location.course,
+                'name': course.location.name,
+            }),
+            get_lms_link_for_item(
+                course.location
+            ),
+            course.display_org_with_default,
+            course.display_number_with_default,
+            course.location.name
+        )
+
+    f = format_function if format_function else format_course_for_view
+    return [f(c) for c in courses if not isinstance(c, ErrorDescriptor)]
+

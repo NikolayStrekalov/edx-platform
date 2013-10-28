@@ -36,7 +36,8 @@ from models.settings.course_metadata import CourseMetadata
 from auth.authz import create_all_course_groups, is_user_in_creator_group
 from util.json_request import expect_json
 
-from .access import has_access, get_location_and_verify_access
+from .access import (
+        has_access, get_location_and_verify_access, list_user_courses)
 from .tabs import initialize_course_tabs
 from .component import (
     OPEN_ENDED_COMPONENT_TYPES, NOTE_COMPONENT_TYPES,
@@ -80,6 +81,10 @@ def course_index(request, org, course, name):
 
     return render_to_response('overview.html', {
         'context_course': course,
+        'courses': list_user_courses(request.user,
+            lambda course: {'url': course.location.url(),
+                            'name': course.display_name_with_default}
+            ),
         'lms_link': lms_link,
         'sections': sections,
         'course_graders': json.dumps(

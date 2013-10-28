@@ -1,0 +1,192 @@
+<%page args="title, name_value_options, save_button_class, unlock_term_text"/>
+<%doc>
+Adds term constructor. Following variables are necessary:
+
+title - name of section
+name_value_options - list of tuples (option name, option value)
+save_button_class - class for save button, to bind action on click it
+unlock_term_text - term from db, string describing constraints
+
+</%doc>
+<div class="subsection-name-input">
+
+    <label>${title}</label>
+
+<div id='termConstructor' class = 'termConstructor'>
+    <table class='termEditor'>
+        <tbody data-bind="foreach: disjunctions">
+            <tr>
+                <td>
+                    <div><img class = "close" src = "/static/img/Delete-icon.png" data-bind='click: $root.removeDisjunction'/></div>
+                </td>
+
+                <td align = "center">
+                    <table>
+
+                        <tbody data-bind="foreach: conjunctions">
+                            <tr>
+
+                                <td>
+
+                                <select  data-bind='value: source_section_id, valueUpdate: "afterkeydown"'>
+                                    % for name, value in name_value_options:
+                                        <option value=${value}>${name}</option>
+                                    % endfor
+                                </select>
+
+                                </td>
+
+
+                                <td>
+                                    <select data-bind='value: field, valueUpdate: "afterkeydown"'>
+                                        <option value="score_abs">Результат (абсолютный)</option>
+                                        <option value="score_rel">Результат (относительный, %)</option>
+                                    </select>
+                                </td>
+                                <td>
+
+                                    <select  data-bind='value: sign, valueUpdate: "afterkeydown"'>
+                                        <option value="more">&#62;</option>
+                                        <option value="more-equals">&#8805;</option>
+                                        <option value="equals">=</option>
+                                        <option value="less-equals">&#8804;</option>
+                                        <option value="less">&#60;</option>
+                                    </select>
+
+                                </td>
+                                <td><input  data-bind='value: value, valueUpdate: "afterkeydown"' class = "value" /></td>
+                                <td style="vertical-align: middle"><img width="20" src = "/static/img/edit_remove.png"  data-bind='click: $root.removeConjunction' class = "del" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                     <div style = "width:100%">
+                         <img class = "add" src  = "/static/img/plus_16.png" data-bind='click: $root.addConjunction' />
+                     </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+ <div style="width: 100%; padding:10px 0px ">
+    <img class = "add" style="width:20px; margin: 3px;" src = "/static/img/plus_32.png" data-bind='click: addDisjunction' />
+</div>
+</div>
+<p style = "text-align: center;"><input type = "button" class = "${save_button_class}" value="Сохранить"/></p>
+
+## TODO subsection-display-name-input does autosave of subsection, see cma/static/js/base.js
+        <input disabled data-bind='value: term_string' style="font-size: 10px; display:none;" class="subsection-display-name-input" data-metadata-name="unlock_term">
+
+## TODO remove this from edit_subsection.html ??
+<script type='text/javascript' src='/static/js/knockout.js'></script>
+<script type='text/javascript' src='/static/js/knockout-mapping.js'></script>
+<script type='text/javascript' src='/static/js/numeric.js'></script>
+
+<script>
+
+    var unlock_term = '${unlock_term_text|h}'.replace(/\&#34;/g, '"');
+
+    window.console.log("unlock_term: " + unlock_term);
+
+    var dataFromDB = ko.utils.parseJson(unlock_term).disjunctions;
+
+    var initialData = [
+            { conjunctions: [
+                { source_section_id: ko.observable(), field: "score_rel" , sign: "less" , value: "123" }]
+           }
+       ];
+
+    var DisjunctionsModel = function(disjunctions) {
+        var self = this;
+
+        self.disjunctions = ko.mapping.fromJS(dataFromDB);
+
+        self.addDisjunction = function() {
+            self.disjunctions.push({
+                conjunctions: ko.observableArray([{
+                    source_section_id: ko.observable(),
+                    field: ko.observable("score_abs"),
+                    sign: ko.observable("more"),
+                    value: ko.observable("0")
+                }])
+            });
+
+            check_numeric();
+            hovers();
+        };
+
+        self.removeDisjunction = function(disjunction) {
+            self.disjunctions.remove(disjunction);
+
+
+        };
+
+        self.addConjunction = function(disjunction) {
+            disjunction.conjunctions.push({
+                source_section_id: ko.observable(),
+                field: ko.observable("score_abs"),
+                sign: ko.observable("more"),
+                value: ko.observable("0")
+            });
+
+            check_numeric();
+            hovers();
+        };
+
+        self.removeConjunction = function(conjunction) {
+            $.each(self.disjunctions(), function() { this.conjunctions.remove(conjunction) })
+        };
+
+        self.term_string = ko.computed(function () {
+            return ko.toJSON({disjunctions: self.disjunctions});
+        });
+
+
+        function update(){
+            self.lastSavedJson(JSON.stringify(ko.toJS({disjunctions: self.disjunctions}), null, 0));
+        }
+        //self.lastSavedJson = ko.observable(unlock_term)
+    };
+
+    ko.applyBindings(new DisjunctionsModel());
+
+    function hovers(){
+        $("img.close").hover(
+            function () {
+                $(this).parent().parent().parent().css("background-color","#fcc");
+            },
+            function () {
+                $(this).parent().parent().parent().css("background-color","");
+            }
+        );
+
+
+        $("img.del").hover(
+            function () {
+                $(this).parent().parent().css("background-color","#fcc");
+            },
+            function () {
+                $(this).parent().parent().css("background-color","");
+            }
+        );
+
+        $("img.add").hover(
+            function () {
+                $(this).parent().css("background-color","#cfc");
+            },
+            function () {
+                $(this).parent().css("background-color","");
+            }
+        );
+    };
+
+    hovers();
+
+    function check_numeric(){
+        $("input.value").numeric();
+    }
+
+    check_numeric();
+
+</script>
+
+</div>

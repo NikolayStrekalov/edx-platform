@@ -22,6 +22,8 @@ from courseware import grades
 from courseware.access import has_access
 from courseware.courses import (get_courses, get_course_with_access,
                                 get_courses_by_university, sort_by_announcement)
+from courseware.grades import is_item_unlocked, grade
+
 import courseware.tabs as tabs
 from courseware.masquerade import setup_masquerade
 from courseware.model_data import ModelDataCache
@@ -353,6 +355,23 @@ def index(request, course_id, chapter=None, section=None,
 
         if chapter is None:
             return redirect_to_course_position(course_module)
+
+        # check course constraints
+        courses = modulestore().get_items(['i4x', None, None, 'course', None])
+        def course_filter(course):
+            return (has_access(user, course, 'see_exists')
+                    # TODO remove this condition when templates purged from db
+                    and course.location.course != 'templates'
+                    and course.location.org != ''
+                    and course.location.course != ''
+                    and course.location.name != '')
+
+        courses = filter(course_filter, courses)
+        courses_by_id = dict((course.location.url(), course) for course in courses)
+        if not is_item_unlocked(course.unlock_term,
+                               courses_by_id,
+                               lambda course: grade(user, request, course)):
+            raise Http404
 
         context = {
             'csrf': csrf(request)['csrf_token'],

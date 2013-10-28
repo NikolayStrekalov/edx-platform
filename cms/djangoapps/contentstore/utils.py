@@ -5,7 +5,6 @@ from xmodule.modulestore import Location
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
 from xmodule.contentstore.content import StaticContent
-from django.core.urlresolvers import reverse
 import copy
 import logging
 import re

@@ -31,6 +31,17 @@ def score_percent(earned, total):
     return score
 
 
+def sections_by_id(courseware):
+    """
+    Воернуть словарь, где ключ - идентификатор раздела, значение - раздел.
+    """
+
+    sections = {}
+    for chapter in courseware:
+        for section in chapter['sections']:
+            sections[section['url_name']] = section
+    return sections
+
 #  вернуть раздел по идентификатору (url)
 def return_section_by_id(section_id,courseware):
 
@@ -45,7 +56,7 @@ def return_section_by_id(section_id,courseware):
     return None
 
 #  Проверка, является ли элемент с условием unlock_term открытым в курсе courseware
-def elementary_conjunction(term, courseware):
+def elementary_conjunction(term, items_by_id, get_grade):
     error_return = True
     if len(term["source_section_id"]) == 0:
         return error_return
@@ -56,21 +67,21 @@ def elementary_conjunction(term, courseware):
     if len(term["value"]) == 0:
         return error_return
 
-    section = return_section_by_id(term["source_section_id"], courseware)
+    section = items_by_id[term["source_section_id"]]#return_section_by_id(term["source_section_id"], courseware)
 
     if not section:
         return error_return
     value = 0
     term["value"] = int(term["value"])
 
-    if term["field"]=="score_rel":
+    if get_grade:
+        value = get_grade(section)
+    elif term["field"]=="score_rel":
         earned = section['section_total'].earned
         possible = section['section_total'].possible
 
         value = score_percent(earned,possible)
-
-
-    if term["field"]=="score_abs":
+    elif term["field"]=="score_abs":
         value = int(section['section_total'].earned)
 
     if term["sign"]== "more":
@@ -103,7 +114,15 @@ def elementary_conjunction(term, courseware):
 
     return error_return
 
-def is_item_unlocked(unlock_term, courseware):
+def is_item_unlocked(unlock_term, items, get_grade=None):
+    """
+    Check unlock_term with items.
+
+    unlock_term - string describing constraints
+    items - dictionary, where key is item's (section or course) url_name,
+            value is section or course
+    get_grade - function to get grade for course
+    """
 
     term = json.loads(unlock_term)
     print term
@@ -111,15 +130,20 @@ def is_item_unlocked(unlock_term, courseware):
     term_result = False
     if not term["disjunctions"]:
         return True
+
     for disjunction in term["disjunctions"]:
 
         if not disjunction["conjunctions"]:
             return True
 
-        conjunctions_result = True
-        for conjunction in disjunction["conjunctions"]:
+        conjunctions_result = reduce(
+                lambda x, y: bool(x) and elementary_conjunction(y, items, get_grade),
+                disjunction['conjunctions'],
+                True)
+        #conjunctions_result = True
+        #for conjunction in disjunction["conjunctions"]:
 
-            conjunctions_result = conjunctions_result * elementary_conjunction(conjunction, courseware)
+        #    conjunctions_result = conjunctions_result * elementary_conjunction(conjunction, sections)
 
         term_result = max(term_result, conjunctions_result)
 
@@ -128,11 +152,13 @@ def is_item_unlocked(unlock_term, courseware):
 #  Проставление локов в курсе courseware
 def set_locks(courseware):
 
+    sections = sections_by_id(courseware)
     for chapter in courseware:
 
         for section in chapter['sections']:
 
-            section['unlocked'] = is_item_unlocked(section['unlock_term'], courseware)
+            section['unlocked'] = is_item_unlocked(section['unlock_term'],
+                    sections)
 
     return courseware
 

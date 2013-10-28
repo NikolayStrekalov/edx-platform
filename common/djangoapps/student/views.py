@@ -53,6 +53,7 @@ from collections import namedtuple
 
 from courseware.courses import get_courses, sort_by_announcement
 from courseware.access import has_access
+from courseware.grades import is_item_unlocked, grade
 
 from external_auth.models import ExternalAuthMap
 
@@ -280,6 +281,13 @@ def dashboard(request):
         # Show any courses that errored on load
         staff_access = True
         errored_courses = modulestore().get_errored_courses()
+    else:
+        # Apply constraints for courses
+        courses_by_id = dict((course.location.url(), course) for course in courses)
+        courses = filter(lambda course: is_item_unlocked(course.unlock_term,
+                               courses_by_id,
+                               lambda course: grade(user, request, course)),
+                         courses)
 
     show_courseware_links_for = frozenset(course.id for course in courses
                                           if has_access(request.user, course, 'load'))

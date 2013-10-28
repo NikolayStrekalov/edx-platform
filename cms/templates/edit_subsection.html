@@ -29,186 +29,21 @@
 
           <input type="text" value="${subsection.display_name_with_default | h}" class="subsection-display-name-input" data-metadata-name="display_name"/>
         </div>
-        <div class="subsection-name-input">
 
-          <label>Условие для разблокировки раздела (если пусто, раздел разблокирован)</label>
-                <div id='termConstructor' class = 'termConstructor'>
-                    <table class='termEditor'>
-                        <tbody data-bind="foreach: disjunctions">
-                            <tr>
-                                <td>
-                                    <div><img class = "close" src = "/static/img/Delete-icon.png" data-bind='click: $root.removeDisjunction'/></div>
-                                </td>
-
-                                <td align = "center">
-                                    <table>
-
-                                        <tbody data-bind="foreach: conjunctions">
-                                            <tr>
-
-                                                <td>
-
-                                                <select  data-bind='value: source_section_id, valueUpdate: "afterkeydown"'>
-                                                    % for every_section in sections:
-                                                      % for every_subsection in every_section.get_children():
-                                                         % if subsection.url_name != every_subsection.url_name:
-                                                            <option value="${every_subsection.url_name}">${every_section.display_name_with_default}: ${every_subsection.display_name_with_default}</option>
-                                                         % endif
-                                                       % endfor
-                                                    % endfor
-                                                </select>
-
-                                                </td>
-
-
-                                                <td>
-                                                    <select data-bind='value: field, valueUpdate: "afterkeydown"'>
-                                                        <option value="score_abs">Результат (абсолютный)</option>
-                                                        <option value="score_rel">Результат (относительный, %)</option>
-                                                    </select>
-                                                </td>
-                                                <td>
-
-                                                    <select  data-bind='value: sign, valueUpdate: "afterkeydown"'>
-                                                        <option value="more">&#62;</option>
-                                                        <option value="more-equals">&#8805;</option>
-                                                        <option value="equals">=</option>
-                                                        <option value="less-equals">&#8804;</option>
-                                                        <option value="less">&#60;</option>
-                                                    </select>
-
-                                                </td>
-                                                <td><input  data-bind='value: value, valueUpdate: "afterkeydown"' class = "value" /></td>
-                                                <td style="vertical-align: middle"><img width="20" src = "/static/img/edit_remove.png"  data-bind='click: $root.removeConjunction' class = "del" /></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                     <div style = "width:100%">
-                                         <img class = "add" src  = "/static/img/plus_16.png" data-bind='click: $root.addConjunction' />
-                                     </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                 <div style="width: 100%; padding:10px 0px ">
-                    <img class = "add" style="width:20px; margin: 3px;" src = "/static/img/plus_32.png" data-bind='click: addDisjunction' />
-                </div>
-                </div>
-                <p style = "text-align: center;"><input type = "button" class = "save-subsection-button" value="Сохранить"/></p>
-
-                <input disabled data-bind='value: term_string' style="font-size: 10px; display:none;" class="subsection-display-name-input" data-metadata-name="unlock_term">
-
-        <script>
-
-            var unlock_term = '${subsection.unlock_term_with_default|h}'.replace(/\&#34;/g, '"');
-            var dataFromDB = ko.utils.parseJson(unlock_term).disjunctions;
-
-            var initialData = [
-                    { conjunctions: [
-                        { source_section_id: ko.observable(), field: "score_rel" , sign: "less" , value: "123" }]
-                   }
-               ];
-
-            var DisjunctionsModel = function(disjunctions) {
-                var self = this;
-
-                self.disjunctions = ko.mapping.fromJS(dataFromDB);
-
-                self.addDisjunction = function() {
-                    self.disjunctions.push({
-                        conjunctions: ko.observableArray([{
-                            source_section_id: ko.observable(),
-                            field: ko.observable("score_abs"),
-                            sign: ko.observable("more"),
-                            value: ko.observable("0")
-                        }])
-                    });
-
-                    check_numeric();
-                    hovers();
-                };
-
-                self.removeDisjunction = function(disjunction) {
-                    self.disjunctions.remove(disjunction);
-
-
-                };
-
-                self.addConjunction = function(disjunction) {
-                    disjunction.conjunctions.push({
-                        source_section_id: ko.observable(),
-                        field: ko.observable("score_abs"),
-                        sign: ko.observable("more"),
-                        value: ko.observable("0")
-                    });
-
-                    check_numeric();
-                    hovers();
-                };
-
-                self.removeConjunction = function(conjunction) {
-                    $.each(self.disjunctions(), function() { this.conjunctions.remove(conjunction) })
-
-
-                };
-
-
-                self.term_string = ko.computed(function () {
-                    return ko.toJSON({disjunctions: self.disjunctions});
-
-                });
-
-
-                function update(){
-                    self.lastSavedJson(JSON.stringify(ko.toJS({disjunctions: self.disjunctions}), null, 0));
-                }
-                //self.lastSavedJson = ko.observable(unlock_term)
-            };
-
-            ko.applyBindings(new DisjunctionsModel());
-
-            function hovers(){
-                $("img.close").hover(
-                    function () {
-                        $(this).parent().parent().parent().css("background-color","#fcc");
-                    },
-                    function () {
-                        $(this).parent().parent().parent().css("background-color","");
-                    }
-                );
-
-
-                $("img.del").hover(
-                    function () {
-                        $(this).parent().parent().css("background-color","#fcc");
-                    },
-                    function () {
-                        $(this).parent().parent().css("background-color","");
-                    }
-                );
-
-                $("img.add").hover(
-                    function () {
-                        $(this).parent().css("background-color","#cfc");
-                    },
-                    function () {
-                        $(this).parent().css("background-color","");
-                    }
-                );
-            };
-
-            hovers();
-
-            function check_numeric(){
-                $("input.value").numeric();
-            }
-
-            check_numeric();
-
-        </script>
-
-        </div>
+        <%
+        title = "Условие для разблокировки раздела (если пусто, раздел разблокирован)"
+        options = []
+        for every_section in sections:
+            for every_subsection in every_section.get_children():
+                if subsection.url_name != every_subsection.url_name:
+                    options.append((every_section.display_name_with_default \
+                            + ': ' + every_subsection.display_name_with_default,
+                                    every_subsection.url_name))
+        %>
+        <%include file="widgets/term_constructor.html" args="title=title,
+                        name_value_options=options,
+                        save_button_class='save-subsection-button',
+                        unlock_term_text=subsection.unlock_term_with_default"/>
 
         <div class="sortable-unit-list">
 

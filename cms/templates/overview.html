@@ -156,6 +156,19 @@
   </div>
 
   <div class="main-wrapper">
+
+      <%
+      title = "Условие для разблокировки курса (если пусто, курс разблокирован)"
+      options = []
+      for course in courses:
+          if  course['url'] != context_course.location.url():
+              options.append((course['name'], course['url']))
+      %>
+      <%include file="widgets/term_constructor.html" args="title=title,
+      name_value_options=options,
+      save_button_class='save-course-button',
+      unlock_term_text=context_course.unlock_term_with_default"/>
+
     <div class="inner-wrapper">
       <article class="courseware-overview" data-course-id="${context_course.location.url()}">
         % for section in sections:

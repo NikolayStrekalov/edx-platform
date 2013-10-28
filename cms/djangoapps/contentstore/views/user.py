@@ -14,7 +14,6 @@ from django.core.context_processors import csrf
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore import Location
 from xmodule.error_module import ErrorDescriptor
-from contentstore.utils import get_lms_link_for_item
 from util.json_request import JsonResponse
 from auth.authz import (
     STAFF_ROLE_NAME, INSTRUCTOR_ROLE_NAME, get_course_groupname_for_role)
@@ -22,7 +21,7 @@ from course_creators.views import (
     get_course_creator_status, add_user_with_status_unrequested,
     user_requested_access)
 
-from .access import has_access
+from .access import has_access, list_user_courses
 
 from student.models import CourseEnrollment
 
@@ -33,36 +32,9 @@ def index(request):
     """
     List all courses available to the logged in user
     """
-    courses = modulestore('direct').get_items(['i4x', None, None, 'course', None])
-
-    # filter out courses that we don't have access too
-    def course_filter(course):
-        return (has_access(request.user, course.location)
-                # TODO remove this condition when templates purged from db
-                and course.location.course != 'templates'
-                and course.location.org != ''
-                and course.location.course != ''
-                and course.location.name != '')
-    courses = filter(course_filter, courses)
-
-    def format_course_for_view(course):
-        return (
-            course.display_name,
-            reverse("course_index", kwargs={
-                'org': course.location.org,
-                'course': course.location.course,
-                'name': course.location.name,
-            }),
-            get_lms_link_for_item(
-                course.location
-            ),
-            course.display_org_with_default,
-            course.display_number_with_default,
-            course.location.name
-        )
 
     return render_to_response('index.html', {
-        'courses': [format_course_for_view(c) for c in courses if not isinstance(c, ErrorDescriptor)],
+        'courses': list_user_courses(request.user),
         'user': request.user,
         'request_course_creator_url': reverse('request_course_creator'),
         'course_creator_status': _get_course_creator_status(request.user),
