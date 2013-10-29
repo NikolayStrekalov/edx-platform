@@ -930,7 +930,7 @@ body.hide-wip {
 }
 
 
-.save-subsection-button, .save-term {
+.save-subsection-button, .save-term, .save-course-button {
 
         background-color: #009FE6;
         background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
@@ -944,6 +944,10 @@ body.hide-wip {
         padding: 4px 20px 5px;
         transition: background-color 0.15s ease 0s, box-shadow 0.15s ease 0s;
         width: 200px!important;
+}
+
+.save-course-button {
+        margin-left: 20px;
 }
 
 .save-subsection-button-active, .save-term-active {

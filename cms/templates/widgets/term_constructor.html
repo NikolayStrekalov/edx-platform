@@ -1,4 +1,5 @@
-<%page args="title, name_value_options, save_button_class, unlock_term_text"/>
+<%page args="title, name_value_options, save_button_class, unlock_term_text,
+relative_or_absolute=True,button_align='center'"/>
 <%doc>
 Adds term constructor. Following variables are necessary:
 
@@ -6,7 +7,8 @@ title - name of section
 name_value_options - list of tuples (option name, option value)
 save_button_class - class for save button, to bind action on click it
 unlock_term_text - term from db, string describing constraints
-
+relative_or_absolute - show relative or absolute grade select
+button_align - where to align save button
 </%doc>
 <div class="subsection-name-input">
 
@@ -36,13 +38,14 @@ unlock_term_text - term from db, string describing constraints
 
                                 </td>
 
-
+                                % if relative_or_absolute:
                                 <td>
                                     <select data-bind='value: field, valueUpdate: "afterkeydown"'>
                                         <option value="score_abs">Результат (абсолютный)</option>
                                         <option value="score_rel">Результат (относительный, %)</option>
                                     </select>
                                 </td>
+                                % endif
                                 <td>
 
                                     <select  data-bind='value: sign, valueUpdate: "afterkeydown"'>
@@ -71,12 +74,10 @@ unlock_term_text - term from db, string describing constraints
     <img class = "add" style="width:20px; margin: 3px;" src = "/static/img/plus_32.png" data-bind='click: addDisjunction' />
 </div>
 </div>
-<p style = "text-align: center;"><input type = "button" class = "${save_button_class}" value="Сохранить"/></p>
+<p style = "text-align: ${button_align};"><input type = "button" class = "${save_button_class}" value="Сохранить"/></p>
 
-## TODO subsection-display-name-input does autosave of subsection, see cma/static/js/base.js
         <input disabled data-bind='value: term_string' style="font-size: 10px; display:none;" class="subsection-display-name-input" data-metadata-name="unlock_term">
 
-## TODO remove this from edit_subsection.html ??
 <script type='text/javascript' src='/static/js/knockout.js'></script>
 <script type='text/javascript' src='/static/js/knockout-mapping.js'></script>
 <script type='text/javascript' src='/static/js/numeric.js'></script>
@@ -84,8 +85,6 @@ unlock_term_text - term from db, string describing constraints
 <script>
 
     var unlock_term = '${unlock_term_text|h}'.replace(/\&#34;/g, '"');
-
-    window.console.log("unlock_term: " + unlock_term);
 
     var dataFromDB = ko.utils.parseJson(unlock_term).disjunctions;
 

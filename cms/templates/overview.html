@@ -137,7 +137,7 @@
 
       </h1>
 
-      <nav class="nav-actions">
+      <nav class="nav-actions nav-dd">
         <h3 class="sr">${_(u"Действия")}</h3>
         <ul>
           <li class="nav-item">
@@ -157,6 +157,7 @@
 
   <div class="main-wrapper">
 
+    <div class="inner-wrapper">
       <%
       title = "Условие для разблокировки курса (если пусто, курс разблокирован)"
       options = []
@@ -167,9 +168,10 @@
       <%include file="widgets/term_constructor.html" args="title=title,
       name_value_options=options,
       save_button_class='save-course-button',
-      unlock_term_text=context_course.unlock_term_with_default"/>
+      unlock_term_text=context_course.unlock_term_with_default,
+      relative_or_absolute=False,
+      button_align='left'"/>
 
-    <div class="inner-wrapper">
       <article class="courseware-overview" data-course-id="${context_course.location.url()}">
         % for section in sections:
         <section class="courseware-section branch" data-id="${section.location}">

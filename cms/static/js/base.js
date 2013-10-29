@@ -123,6 +123,16 @@ $(document).ready(function() {
     // add new/delete section
     $('.new-courseware-section-button').bind('click', addNewSection);
     $('.delete-section-button').bind('click', deleteSection);
+    // save course constraints
+    $('.save-course-button').bind('click', saveCourseConstraintsOnButton);
+    function saveCourseConstraintsOnButton(){
+
+      $('.save-course-button').val("сохраняется...");
+      $('.save-course-button').addClass("save-course-button-active");
+      saveCourseConstraints();
+      setTimeout('$(".save-course-button").val("Сохранить"); $(".save-course-button").removeClass("save-course-button-active");', 1500);
+
+    }
 
     // add new/delete subsection
     $('.new-subsection-item').bind('click', addNewSubsection);
@@ -294,6 +304,32 @@ function autosaveInput(e) {
         saveSubsection();
         self.saveTimer = null;
     }, 500);
+}
+
+function saveCourseConstraints() {
+    var id = $('.courseware-overview').data('course-id');
+
+    var metadata_fields = $('input[data-metadata-name]');
+
+    var metadata = {};
+    for (var i = 0; i < metadata_fields.length; i++) {
+        var el = metadata_fields[i];
+        metadata[$(el).data("metadata-name")] = el.value;
+    }
+
+    $.ajax({
+        url: "/save_item",
+        type: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify({
+            'id': id,
+            'metadata': metadata
+        }),
+        error: function() {
+            showToastMessage(gettext('Произошла ошибка во время сохранения.'));
+        }
+    });
 }
 
 function saveSubsection() {
